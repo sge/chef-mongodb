@@ -99,8 +99,8 @@ define :mongodb_instance, :mongodb_type => "mongod" , :action => [:enable, :star
       "logpath" => logfile,
       "dbpath" => dbpath,
       "replicaset_name" => replicaset_name,
-      "configsrv" => false, #type == "configserver", this might change the port
-      "shardsrv" => false,  #type == "shard", dito.
+      "configsrv" => (type == "configserver"),
+      "shardsrv" => (type == "shard"),
       "enable_rest" => params[:enable_rest]
     )
     notifies :restart, "service[#{name}]"
