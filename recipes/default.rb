@@ -21,6 +21,7 @@
 
 package node[:mongodb][:package_name] do
   action :install
+  version node[:mongodb][:package_version]
 end
 
 needs_mongo_gem = (node.recipe?("mongodb::replicaset") or node.recipe?("mongodb::mongos"))
@@ -33,6 +34,18 @@ if needs_mongo_gem
   Gem.clear_paths
 end
 
+# Create keyFile if specified
+if node[:mongodb][:key_file]
+  file "/etc/mongodb.key" do
+    owner node[:mongodb][:user]
+    group node[:mongodb][:group]
+    mode  "0600"
+    backup false
+    content node[:mongodb][:key_file]
+  end
+end
+
+
 if node.recipe?("mongodb::default") or node.recipe?("mongodb")
   # configure default instance
   mongodb_instance "mongodb" do
@@ -42,5 +55,6 @@ if node.recipe?("mongodb::default") or node.recipe?("mongodb")
     logpath      node['mongodb']['logpath']
     dbpath       node['mongodb']['dbpath']
     enable_rest  node['mongodb']['enable_rest']
+    smallfiles   node['mongodb']['smallfiles']
   end
 end
